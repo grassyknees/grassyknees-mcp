@@ -1,0 +1,10 @@
+src/
+scripts/
+*.mcpb
+tsconfig.json
+server.json
+glama.json
+.git/
+node_modules/typescript/
+node_modules/@types/
+node_modules/undici-types/

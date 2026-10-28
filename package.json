@@ -1,0 +1,53 @@
+{
+  "name": "grassyknees-mcp",
+  "version": "0.1.0",
+  "description": "Read-only MCP server for Grassy Knees: real, source-checked kids' events and places in 42 US metro areas.",
+  "mcpName": "io.github.grassyknees/grassyknees-mcp",
+  "type": "module",
+  "bin": {
+    "grassyknees-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "start": "node dist/index.js",
+    "smoke": "node scripts/smoke.mjs",
+    "prepublishOnly": "npm run build",
+    "pack:mcpb": "npm run build && npx -y @anthropic-ai/mcpb@2.1.2 pack . grassyknees-mcp.mcpb"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "kids",
+    "family",
+    "events",
+    "things-to-do",
+    "grassy-knees"
+  ],
+  "homepage": "https://grassyknees.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grassyknees/grassyknees-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/grassyknees/grassyknees-mcp/issues"
+  },
+  "author": "Poetical Engine LLC <hello@grassyknees.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3"
+  }
+}

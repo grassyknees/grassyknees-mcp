@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.grassyknees/grassyknees-mcp",
+  "title": "Grassy Knees",
+  "description": "Real, source-checked kids' events and places in 42 US metros, linked to grassyknees.com.",
+  "websiteUrl": "https://grassyknees.com",
+  "repository": {
+    "url": "https://github.com/grassyknees/grassyknees-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "grassyknees-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

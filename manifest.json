@@ -1,0 +1,24 @@
+{
+  "manifest_version": "0.3",
+  "name": "grassyknees-mcp",
+  "display_name": "Grassy Knees: kids' events and places",
+  "version": "0.1.0",
+  "description": "Real, source-checked kids' events, classes and places in 42 US metro areas, each linked to grassyknees.com with its last-checked date.",
+  "author": { "name": "Grassy Knees", "email": "hello@grassyknees.com", "url": "https://grassyknees.com" },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": { "command": "node", "args": ["${__dirname}/dist/index.js"] }
+  },
+  "tools": [
+    { "name": "list_metros", "description": "List the 42 US metro areas covered, with ids and page URLs" },
+    { "name": "search_activities", "description": "Search one metro's kids' events, programs and places by date, price, age, category and keywords (max 20)" },
+    { "name": "get_activity", "description": "Full details for one listing by grassyknees.com URL or id" },
+    { "name": "seasonal_guide", "description": "Halloween, Christmas, ice skating or Easter guide for a metro, as trimmed Markdown" }
+  ],
+  "keywords": ["kids", "family", "events", "things to do", "weekend"],
+  "license": "MIT",
+  "homepage": "https://grassyknees.com",
+  "repository": { "type": "git", "url": "https://github.com/grassyknees/grassyknees-mcp.git" },
+  "compatibility": { "platforms": ["darwin", "win32", "linux"], "runtimes": { "node": ">=20.0.0" } }
+}
