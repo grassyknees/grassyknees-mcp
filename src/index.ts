@@ -6,12 +6,12 @@ import { z } from "zod";
 import { ORIGIN, VERSION, getJson, getText, HttpError } from "./client.js";
 import { METROS, type Metro } from "./metros.js";
 import {
-  CATEGORIES, type Activity, type Summary, activeIn, addDays, firstDayIn, fitsAge, idFromInput, isFree, isPast,
+  CATEGORIES, type Activity, type Summary, activeIn, addDays, clip, firstDayIn, fitsAge, idFromInput, isFree, isPast,
   metroToday, pageUrl, summary, summaryMarkdown, weekendRange,
 } from "./listings.js";
 
 const MAX_RESULTS = 20;
-const CREDIT = "Data: Grassy Knees (https://grassyknees.com). Each listing was researched from the organizer's own page; link to the listing URL and mention the last-checked date. Confirm details on the official page before going.";
+const CREDIT = "Data: Grassy Knees (https://grassyknees.com). Each listing was researched from the organizer's own page; link to the listing URL and mention the last-checked date. Registration, the organizer's links and contact details are on the listing's grassyknees.com page.";
 
 const norm = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 const ALIASES: Record<string, string> = {
@@ -67,7 +67,7 @@ const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 server.registerTool("search_activities", {
   title: "Search kids' activities in a metro",
   description: "Find kids' and family events, classes/programs and places in one Grassy Knees metro area, filtered by date, price, age, category and keywords. " +
-    `Returns at most ${MAX_RESULTS} listings, soonest first, each with its grassyknees.com page URL, the organizer's official link and the last-checked date. ` +
+    `Returns at most ${MAX_RESULTS} listings, soonest first, each with its grassyknees.com page URL and the last-checked date. ` +
     "Dates are in the metro's local time.",
   inputSchema: {
     metro: z.string().describe("Metro id from list_metros (e.g. denver, new-york, washington-dc, dallas-fort-worth). Common names like 'NYC' or 'Dallas' also work."),
@@ -131,7 +131,7 @@ server.registerTool("search_activities", {
 
 server.registerTool("get_activity", {
   title: "Get one listing",
-  description: "Full details for one Grassy Knees listing: schedule, venue, ages, price, registration and official links, last-checked date. Pass the grassyknees.com listing URL or the listing id (listing-…) from search_activities.",
+  description: "Details for one Grassy Knees listing: schedule and upcoming dates, venue, ages, price, last-checked date and its grassyknees.com page (registration and organizer links are there). Pass the grassyknees.com listing URL or the listing id (listing-…) from search_activities.",
   inputSchema: { url_or_id: z.string().min(3).max(500).describe("A grassyknees.com listing URL such as https://grassyknees.com/denver/activities/<slug>--listing-…, or its id.") },
   annotations: { readOnlyHint: true, openWorldHint: true },
 }, async ({ url_or_id }) => {
@@ -147,13 +147,9 @@ server.registerTool("get_activity", {
   const s = summary(a, next);
   const detail = {
     ...s,
-    description: a.description,
+    description: clip(a.description || "", 500),
     ...(a.schedule ? { schedule: a.schedule } : {}),
     ...(a.occurrenceDates?.length ? { upcomingDates: a.occurrenceDates.filter(d => d >= today).slice(0, 12) } : {}),
-    ...(a.registrationUrl ? { registrationUrl: a.registrationUrl } : {}),
-    ...(a.website ? { website: a.website } : {}),
-    ...(a.phone ? { phone: a.phone } : {}),
-    ...(a.registrationOpens?.length ? { registrationOpens: a.registrationOpens } : {}),
     ended: isPast(a, today),
     metro: a.cityId,
     markdownUrl: pageUrl(a) + ".md",
@@ -164,10 +160,8 @@ server.registerTool("get_activity", {
     detail.upcomingDates && detail.upcomingDates.length > 1 ? `- Upcoming dates: ${detail.upcomingDates.join(", ")}` : "",
     `- Where: ${a.venue}${a.address ? ", " + a.address : ""}`,
     `- Ages: ${s.ages}`, `- Price: ${s.price}`, `- Category: ${a.category} (${a.kind})`, `- Organizer: ${s.organizer}`,
-    `- Official page: ${a.sourceUrl}`, detail.registrationUrl ? `- Registration: ${detail.registrationUrl}` : "",
-    detail.registrationOpens ? `- Registration opens: ${detail.registrationOpens.map(r => r.date + (r.time ? " " + r.time : "") + (r.audience ? ` (${r.audience})` : "")).join("; ")}` : "",
-    detail.phone ? `- Phone: ${detail.phone}` : "",
-    `- Last checked: ${a.verifiedAt}`, s.note ? `- Note: ${s.note}` : "", BREAK, a.description, BREAK, CREDIT,
+    `- Registration, organizer links and contact: ${detail.url}`,
+    `- Last checked: ${a.verifiedAt}`, s.note ? `- Note: ${s.note}` : "", BREAK, detail.description, BREAK, CREDIT,
   ].filter(l => l !== ""); // optional rows are "" when absent
   const text = lines.map(l => (l === BREAK ? "" : l)).join("\n");
   return ok(text, { activity: detail, credit: CREDIT });

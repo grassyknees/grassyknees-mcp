@@ -4,7 +4,7 @@ Website: https://grassyknees.com
 
 A small, read-only [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI assistants answer questions like *"what can I do with my kids in Denver this weekend?"* with real listings from [Grassy Knees](https://grassyknees.com). Grassy Knees is a free directory of kids' and family events, classes and places across 42 US metro areas. Every listing is researched from the organizer's own page and shows the date it was last checked.
 
-Every result includes the listing's grassyknees.com page URL, the organizer's official link and the last-checked date. Each call returns at most 20 listings.
+Every result says what the listing is, where and when, ages and price, the last-checked date and its grassyknees.com page URL. Registration, the organizer's links and contact details are on that page. Each call returns at most 20 listings.
 
 ## Example prompts
 
@@ -65,7 +65,7 @@ Or with Docker: build the image with `docker build -t grassyknees-mcp .` and use
 | --- | --- |
 | `list_metros` | The 42 metro areas covered, with the id to pass to other tools (for example `denver`, `new-york`, `washington-dc`, `dallas-fort-worth`) and each metro's page URL. |
 | `search_activities` | Search one metro. Filters: `when` (`today`, `tomorrow`, `this-weekend`, `next-7-days`, `next-30-days`) or `start_date`/`end_date`, `kind` (`event`, `program`, `place`, `any`), `free_only`, `age`, `category`, `query` (keywords), `limit` (1–20, default 10). Soonest first. |
-| `get_activity` | Full details for one listing from its grassyknees.com URL or id: schedule, upcoming dates, venue, ages, price, registration link, last-checked date. |
+| `get_activity` | One listing from its grassyknees.com URL or id: schedule, upcoming dates, venue, ages, price, last-checked date and its page URL. |
 | `seasonal_guide` | The Halloween, Christmas (lights and holiday events), ice skating or Easter guide for a metro, or the all-metros overview, as Markdown trimmed to `max_chars` (default 8,000). |
 
 Dates are in the metro's local time. `this-weekend` means Friday to Sunday, the same window as the site's `/<metro>/this-weekend` page.
@@ -106,7 +106,7 @@ More on grassyknees.com: https://grassyknees.com/denver/this-weekend
 # School's Out! Day: Pumpkins & Potions
 - When: Fri, Oct 30 · 8:30 AM–3:30 PM
 - Where: JCC Denver (Staenberg-Loup Jewish Community Center), 350 S. Dahlia St., Denver, CO 80246
-- Official page: https://www.jccdenver.org/camps/schools-out-camp/
+- Registration, organizer links and contact: https://grassyknees.com/denver/activities/school-s-out-day-pumpkins-and-potions--listing-023a33783babb5880fc24e03
 - Last checked: 2026-10-14
 ...
 
@@ -139,7 +139,7 @@ npx @modelcontextprotocol/inspector --cli node dist/index.js --method tools/list
 
 ## Credit
 
-Data: Grassy Knees, [grassyknees.com](https://grassyknees.com). When you show results, link to the listing's grassyknees.com page and mention its last-checked date. Details can change, so confirm on the organizer's official page before you go.
+Data: Grassy Knees, [grassyknees.com](https://grassyknees.com). When you show results, link to the listing's grassyknees.com page and mention its last-checked date. Details can change, so check the listing page (it links the organizer's own page) before you go.
 
 ## License
 

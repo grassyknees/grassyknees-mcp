@@ -1,6 +1,6 @@
 // HTTP access to grassyknees.com: one request at a time, a short in-memory cache, and an identifying User-Agent.
 // The site sits behind a slow shared proxy, so this never fans out across metros.
-export const VERSION = "0.1.0";
+export const VERSION = "0.2.0";
 export const ORIGIN = (process.env.GRASSYKNEES_ORIGIN || "https://grassyknees.com").replace(/\/$/, "");
 const USER_AGENT = `grassyknees-mcp/${VERSION} (+https://github.com/grassyknees/grassyknees-mcp)`;
 const TIMEOUT_MS = 45_000;

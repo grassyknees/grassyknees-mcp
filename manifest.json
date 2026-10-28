@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "grassyknees-mcp",
   "display_name": "Grassy Knees: kids' events and places",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Real, source-checked kids' events, classes and places in 42 US metro areas, each linked to grassyknees.com with its last-checked date.",
   "author": { "name": "Grassy Knees", "email": "hello@grassyknees.com", "url": "https://grassyknees.com" },
   "server": {

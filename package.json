@@ -1,6 +1,6 @@
 {
   "name": "grassyknees-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Read-only MCP server for Grassy Knees: real, source-checked kids' events and places in 42 US metro areas.",
   "mcpName": "io.github.grassyknees/grassyknees-mcp",
   "type": "module",

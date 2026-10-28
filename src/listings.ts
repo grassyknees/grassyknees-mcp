@@ -115,9 +115,10 @@ export function availabilityNote(a: Activity) {
     : a.availability === "needs_confirmation" ? "Some details still need confirmation; check the organizer's page before going." : undefined;
 }
 
-const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : s);
+export const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : s);
 
-// The bounded, attributed shape every tool returns for a listing.
+// The bounded, attributed shape every tool returns for a listing: what, where and when, ages and price, and its grassyknees.com page.
+// Organizer links, registration and contacts are left to that page.
 export function summary(a: Activity, day: string | null) {
   return {
     title: a.title,
@@ -131,7 +132,6 @@ export function summary(a: Activity, day: string | null) {
     ages: ageText(a),
     price: priceText(a),
     organizer: a.organizationName || a.organizer,
-    officialUrl: a.sourceUrl,
     lastChecked: a.verifiedAt,
     ...(availabilityNote(a) ? { note: availabilityNote(a) } : {}),
     ...(a.inclusive?.length ? { tags: a.inclusive } : {}),
