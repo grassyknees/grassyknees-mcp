@@ -57,6 +57,8 @@ Add this to `~/.cursor/mcp.json` (or `.cursor/mcp.json` in a project):
 
 Any other MCP client that runs stdio servers works the same way: the command is `npx -y grassyknees-mcp`.
 
+Or with Docker: build the image with `docker build -t grassyknees-mcp .` and use `docker run -i --rm grassyknees-mcp` as the command.
+
 ## Tools
 
 | Tool | What it does |
