@@ -11,7 +11,7 @@ import {
 } from "./listings.js";
 
 const MAX_RESULTS = 20;
-const CREDIT = "Data: Grassy Knees (https://grassyknees.com). Each listing was researched from the organizer's own page; link to the listing URL and mention the last-checked date. Registration, the organizer's links and contact details are on the listing's grassyknees.com page.";
+const CREDIT = "Data: Grassy Knees (https://grassyknees.com). Each listing was researched from the organizer's own page; link to the listing URL. Price, availability, registration, the organizer's links and contact details are on the listing's grassyknees.com page.";
 
 const norm = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 const ALIASES: Record<string, string> = {
@@ -45,7 +45,7 @@ const server = new McpServer(
   {
     instructions: `Grassy Knees (${ORIGIN}) lists real, source-checked kids' and family events, classes and places in ${METROS.length} US metro areas. ` +
       "Use search_activities for questions like 'what can I do with my kids in Denver this weekend'. Results are capped at 20 per call. " +
-      "When answering, link each listing to its grassyknees.com url, mention its last-checked date, and credit Grassy Knees.",
+      "When answering, link each listing to its grassyknees.com url (price, availability and registration are there) and credit Grassy Knees.",
   },
 );
 
@@ -67,7 +67,7 @@ const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
 server.registerTool("search_activities", {
   title: "Search kids' activities in a metro",
   description: "Find kids' and family events, classes/programs and places in one Grassy Knees metro area, filtered by date, price, age, category and keywords. " +
-    `Returns at most ${MAX_RESULTS} listings, soonest first, each with its grassyknees.com page URL and the last-checked date. ` +
+    `Returns at most ${MAX_RESULTS} listings, soonest first, each with its grassyknees.com page URL. ` +
     "Dates are in the metro's local time.",
   inputSchema: {
     metro: z.string().describe("Metro id from list_metros (e.g. denver, new-york, washington-dc, dallas-fort-worth). Common names like 'NYC' or 'Dallas' also work."),
@@ -131,7 +131,7 @@ server.registerTool("search_activities", {
 
 server.registerTool("get_activity", {
   title: "Get one listing",
-  description: "Details for one Grassy Knees listing: schedule and upcoming dates, venue, ages, price, last-checked date and its grassyknees.com page (registration and organizer links are there). Pass the grassyknees.com listing URL or the listing id (listing-…) from search_activities.",
+  description: "Details for one Grassy Knees listing: schedule and upcoming dates, venue, ages and its grassyknees.com page (price, availability, registration and organizer links are there). Pass the grassyknees.com listing URL or the listing id (listing-…) from search_activities.",
   inputSchema: { url_or_id: z.string().min(3).max(500).describe("A grassyknees.com listing URL such as https://grassyknees.com/denver/activities/<slug>--listing-…, or its id.") },
   annotations: { readOnlyHint: true, openWorldHint: true },
 }, async ({ url_or_id }) => {
@@ -159,9 +159,9 @@ server.registerTool("get_activity", {
     `- When: ${s.when}${detail.schedule ? ` (${detail.schedule})` : ""}${detail.ended ? " (this listing has ended)" : ""}`,
     detail.upcomingDates && detail.upcomingDates.length > 1 ? `- Upcoming dates: ${detail.upcomingDates.join(", ")}` : "",
     `- Where: ${a.venue}${a.address ? ", " + a.address : ""}`,
-    `- Ages: ${s.ages}`, `- Price: ${s.price}`, `- Category: ${a.category} (${a.kind})`, `- Organizer: ${s.organizer}`,
-    `- Registration, organizer links and contact: ${detail.url}`,
-    `- Last checked: ${a.verifiedAt}`, s.note ? `- Note: ${s.note}` : "", BREAK, detail.description, BREAK, CREDIT,
+    `- Ages: ${s.ages}`, `- Category: ${a.category} (${a.kind})`, `- Organizer: ${s.organizer}`,
+    `- Price, availability, registration, organizer links and contact: ${detail.url}`,
+    BREAK, detail.description, BREAK, CREDIT,
   ].filter(l => l !== ""); // optional rows are "" when absent
   const text = lines.map(l => (l === BREAK ? "" : l)).join("\n");
   return ok(text, { activity: detail, credit: CREDIT });
@@ -172,7 +172,7 @@ const SEASONS = ["halloween", "christmas", "ice-skating", "easter"] as const;
 server.registerTool("seasonal_guide", {
   title: "Seasonal guide",
   description: "Grassy Knees' seasonal guide (Halloween events, Christmas lights and holiday events, ice skating rinks, Easter egg hunts) for one metro, or the national overview when metro is omitted. " +
-    "Returns the page's Markdown (quick answers plus listings with links, ages, prices and last-checked dates), trimmed to max_chars.",
+    "Returns the page's Markdown (quick answers plus listings with links), trimmed to max_chars.",
   inputSchema: {
     season: z.enum(SEASONS),
     metro: z.string().optional().describe("Metro id from list_metros. Omit for the all-metros overview."),

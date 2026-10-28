@@ -1,4 +1,4 @@
-// Listing shape and date/price/age rules, mirroring how grassyknees.com itself filters and labels listings.
+// Listing shape and date/age rules, mirroring how grassyknees.com itself filters and labels listings.
 import { ORIGIN } from "./client.js";
 import type { Metro } from "./metros.js";
 
@@ -74,11 +74,6 @@ export function ageText(a: Activity) {
   return a.ageLabel || "Check age guidance";
 }
 
-export function priceText(a: Activity) {
-  const money = (n: number) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
-  const base = isFree(a) ? "Free" : a.costType === "conditional" ? "With admission" : a.price !== null && a.price > 0 ? (a.curated ? `From ${money(a.price)}` : money(a.price)) : a.costType === "paid" ? "Paid" : "Check price";
-  return a.priceLabel && a.priceLabel !== base ? `${base} (${clip(a.priceLabel, 90)})` : base;
-}
 
 const pretty = (d: string) => new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(d + "T12:00:00Z"));
 const clock = (t: string) => { const [h, m] = t.split(":"); return `${Number(h) % 12 || 12}:${m} ${Number(h) >= 12 ? "PM" : "AM"}`; };
@@ -109,16 +104,11 @@ export function idFromInput(input: string) {
   return i < 0 ? last : last.slice(i + 2);
 }
 
-export function availabilityNote(a: Activity) {
-  return a.availability === "cancelled" ? "Cancelled, according to the organizer."
-    : a.availability === "sold_out" ? "Sold out on the organizer's page when last checked."
-    : a.availability === "needs_confirmation" ? "Some details still need confirmation; check the organizer's page before going." : undefined;
-}
 
 export const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : s);
 
-// The bounded, attributed shape every tool returns for a listing: what, where and when, ages and price, and its grassyknees.com page.
-// Organizer links, registration and contacts are left to that page.
+// The bounded, attributed shape every tool returns for a listing: what, where and when, ages, and its grassyknees.com page.
+// Price, availability, the last-checked date, organizer links, registration and contacts are left to that page.
 export function summary(a: Activity, day: string | null) {
   return {
     title: a.title,
@@ -130,10 +120,7 @@ export function summary(a: Activity, day: string | null) {
     venue: a.venue,
     address: a.address,
     ages: ageText(a),
-    price: priceText(a),
     organizer: a.organizationName || a.organizer,
-    lastChecked: a.verifiedAt,
-    ...(availabilityNote(a) ? { note: availabilityNote(a) } : {}),
     ...(a.inclusive?.length ? { tags: a.inclusive } : {}),
     description: clip(a.description || "", 220),
   };
@@ -145,9 +132,8 @@ export function summaryMarkdown(s: Summary, n?: number) {
   const lines = [
     head,
     `   ${s.when} · ${s.venue}${s.address ? ", " + s.address : ""}`,
-    `   ${s.ages} · ${s.price} · ${s.category} · last checked ${s.lastChecked}`,
+    `   ${s.ages} · ${s.category}`,
   ];
-  if (s.note) lines.push(`   Note: ${s.note}`);
   if (s.description) lines.push(`   ${s.description}`);
   return lines.join("\n");
 }
